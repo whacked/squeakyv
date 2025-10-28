@@ -3,9 +3,17 @@ generate-schemas:
   out: ./schemas/database.autogen.schema.json
   run: jsonnet $in | jq -S | tee $out
 
-generate-sql:
+generate-table-ddl:
   in:
     schema: ./schemas/database.autogen.schema.json
     codegen: ./generators/create-database.py
   out: ./sql/create-database.autogen.sql
   run: python ${in.codegen} ${in.schema} | tee $out
+
+generate-sql-query-template:
+  in:
+    schema: ./schemas/database.autogen.schema.json
+    codegen: ./generators/create-operations-yesql.py
+  out: ./sql/database-operations.autogen.yesql.sql
+  run: python ${in.codegen} ${in.schema} | tee $out
+

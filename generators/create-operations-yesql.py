@@ -1,5 +1,6 @@
 import json
 import sys
+import os.path as _p
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
@@ -88,7 +89,11 @@ ORDER BY {{ kv_info.inserted_at_field }} DESC;
 
 
 if __name__ == "__main__":
-    with open("./schemas/database.autogen.schema.json") as ifile:
+    json_schema_path = sys.argv[1]
+    assert json_schema_path.endswith(".json")
+    assert _p.exists(json_schema_path)
+
+    with open(json_schema_path) as ifile:
         json_schema_dict = jsonref.load(ifile)
 
     kv_info = find_kv_table_info(json_schema_dict.get("properties", {}))
