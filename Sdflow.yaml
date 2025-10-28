@@ -1,0 +1,11 @@
+generate-schemas:
+  in: ./generators/database.schema.jsonnet
+  out: ./schemas/database.autogen.schema.json
+  run: jsonnet $in | jq -S | tee $out
+
+generate-sql:
+  in:
+    schema: ./schemas/database.autogen.schema.json
+    codegen: ./generators/create-database.py
+  out: ./sql/create-database.autogen.sql
+  run: python ${in.codegen} ${in.schema} | tee $out

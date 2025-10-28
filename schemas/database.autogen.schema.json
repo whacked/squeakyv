@@ -1,0 +1,76 @@
+{
+  "$defs": {
+    "KVEntry": {
+      "description": "Key-value entry",
+      "properties": {
+        "inserted_at": {
+          "description": "UNIX insertion time (milliseconds)",
+          "sqlite:default": "CAST(unixepoch('subsec') * 1000 AS INTEGER)",
+          "type": "integer"
+        },
+        "is_active": {
+          "description": "Logical active flag (0 or 1)",
+          "sqlite:check": "is_active IN (0,1)",
+          "sqlite:default": "1",
+          "type": "integer"
+        },
+        "key": {
+          "description": "Logical key identifier",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "value": {
+          "description": "Arbitrary payload stored as BLOB for maximum compatibility",
+          "sqlite:type": "BLOB"
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "inserted_at",
+        "is_active"
+      ],
+      "type": "object"
+    },
+    "MetadataEntry": {
+      "description": "Stores internal library metadata (e.g., schema version)",
+      "properties": {
+        "key": {
+          "description": "Metadata key (e.g., 'schema_version', 'creation_date')",
+          "maxLength": 64,
+          "sqlite:primaryKey": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Associated value for the metadata key",
+          "maxLength": 255,
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "type": "object"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "__metadata__": {
+      "description": "Database internal metadata table",
+      "items": {
+        "$ref": "#/$defs/MetadataEntry"
+      },
+      "type": "array"
+    },
+    "kv": {
+      "description": "Single key-value table storing arbitrary values",
+      "items": {
+        "$ref": "#/$defs/KVEntry"
+      },
+      "type": "array"
+    }
+  },
+  "title": "Database Schema",
+  "type": "object"
+}
