@@ -10,10 +10,17 @@ generate-table-ddl:
   out: ./sql/create-database.autogen.sql
   run: python ${in.codegen} ${in.schema} | tee $out
 
-generate-sql-query-template:
+generate-yesql-query-template:
   in:
     schema: ./schemas/database.autogen.schema.json
     codegen: ./generators/create-operations-yesql.py
   out: ./sql/database-operations.autogen.yesql.sql
   run: python ${in.codegen} ${in.schema} | tee $out
+
+generate-python-target:
+  in:
+    generator: generators/render-sqlite-queries.py
+    yesql: sql/database-operations.autogen.yesql.sql
+  out: ./targets/python/squeakyv.py
+  run: python ${in.generator} python ${in.yesql} | tee $out
 

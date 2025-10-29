@@ -12,11 +12,13 @@ in helpers.mkShell [
   buildInputs = [
     pkgs.jq
     pkgs.jsonnet
+    pkgs.python3Packages.ipython
   ] ++ [
     sdflow
     pkgs.rlwrap
     pkgs.nodejs
     pkgs.python3
+    pkgs.python3Packages.aiosql
     pkgs.python3Packages.jinja2
     pkgs.python3Packages.jsonref
   ];  # join lists with ++

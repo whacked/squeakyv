@@ -1,6 +1,6 @@
 import json
-import sys
 import os.path as _p
+import sys
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
@@ -63,15 +63,14 @@ J2_TEMPLATE = jinja2.Template("""\
 
 -- name: get-current-value(key)^
 -- Retrieves the current active value for a key
-SELECT {{ kv_info.value_field }}, {{ kv_info.inserted_at_field }}
+SELECT {{ kv_info.value_field }} -- , {{ kv_info.inserted_at_field }}
 FROM {{ kv_info.table_name }}
 WHERE {{ kv_info.key_field }} = :key AND {{ kv_info.is_active_field }} = 1;
 
--- name: set-value(key, value)*
+-- name: set-value(key, value)!
 -- Sets a new value for a key (trigger handles deactivating old values)
 INSERT INTO {{ kv_info.table_name }} ({{ kv_info.key_field }}, {{ kv_info.value_field }})
-VALUES (:key, :value)
-RETURNING {{ kv_info.key_field }}, {{ kv_info.value_field }}, {{ kv_info.inserted_at_field }};
+VALUES (:key, :value);
 
 -- name: delete-key(key)!
 -- Soft deletes a key by setting is_active = 0
@@ -79,9 +78,9 @@ UPDATE {{ kv_info.table_name }}
 SET {{ kv_info.is_active_field }} = 0
 WHERE {{ kv_info.key_field }} = :key AND {{ kv_info.is_active_field }} = 1;
 
--- name: list-active-keys()^
+-- name: list-active-keys()
 -- Lists all currently active keys
-SELECT {{ kv_info.key_field }}, {{ kv_info.inserted_at_field }}
+SELECT {{ kv_info.key_field }} -- , {{ kv_info.inserted_at_field }}
 FROM {{ kv_info.table_name }}
 WHERE {{ kv_info.is_active_field }} = 1
 ORDER BY {{ kv_info.inserted_at_field }} DESC;

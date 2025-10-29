@@ -1,0 +1,74 @@
+from dataclasses import dataclass
+from typing import Dict, Optional
+
+import jinja2
+from aiosql.types import QueryFn, SQLOperationType
+
+
+def render(statements_map: Dict[str, QueryFn]) -> str:
+    out: list[str] = []
+    out.append("""\
+import sqlite3
+
+DEBUG_LEVEL = 0
+""")
+
+    @dataclass
+    class ReturnInfo:
+        return_call: Optional[str]
+        return_type: str
+
+    def get_return_info(operation: SQLOperationType) -> ReturnInfo:
+        """Determine the appropriate return method based on SQL operation type."""
+        if operation == SQLOperationType.SELECT_ONE:
+            return ReturnInfo(
+                return_call="cursor.fetchone()[0]", return_type="str | bytes"
+            )
+        elif operation == SQLOperationType.SELECT:
+            return ReturnInfo(
+                return_call="[row[0] for row in cursor.fetchall()]",
+                return_type="list[str | bytes]",
+            )
+        elif (
+            operation
+            in [
+                SQLOperationType.INSERT_UPDATE_DELETE,
+                SQLOperationType.INSERT_RETURNING,
+            ]
+            or True
+        ):
+            return ReturnInfo(return_call=None, return_type="None")
+
+    FUNCTION_TEMPLATE = jinja2.Template('''\
+def {{ name }}(conn: sqlite3.Connection, {{ ", ".join(parameters) }}) -> {{ return_type }}:
+    """{{ docstring }}"""
+    statement = """\
+{{ sql }}
+"""
+    parameters = { {% for p in parameters %}"{{ p }}": {{ p }}{% if not loop.last %}, {% endif %}{% endfor %} }
+    if DEBUG_LEVEL > 0:
+        print("STATEMENT:", statement)
+        print("PARAMETERS:", parameters)
+    cursor = conn.execute(statement, parameters)
+    {% if return_call %}
+    return {{ return_call }}
+    {% else %}
+    return None
+    {% endif %}
+''')
+
+    for fname, qfn in statements_map.items():
+        return_info = get_return_info(qfn.operation)
+        out.append(
+            FUNCTION_TEMPLATE.render(
+                name=fname,
+                parameters=qfn.parameters,
+                sql=qfn.sql,
+                docstring=f"Execute {fname} query, returns {return_info.return_type}",
+                return_call=return_info.return_call,
+                return_type=return_info.return_type,
+            )
+        )
+        out.append("\n")
+
+    return "\n".join(out)
