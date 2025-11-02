@@ -22,15 +22,6 @@ generate-python-target:
     generator: generators/render-sqlite-queries.py
     database_ops: sql/database-operations.autogen.yesql.sql
     database_init: ./sql/create-database.autogen.sql
-  out:
-    operations: ./targets/python/squeakyv/_operations.py
-    sql_copy: ./targets/python/squeakyv/_schema.sql
-  run: |
-    cp ${in.database_init} ${out.sql_copy}
-    python ${in.generator} python ${in.database_ops} | tee ${out.operations}
-
-copy-schema-to-python-package:
-  in: ./sql/create-database.autogen.sql
-  out: ./targets/python/squeakyv/_schema.sql
-  run: cp $in $out
+  out: ./targets/python/squeakyv/_operations.py
+  run: python ${in.generator} python ${in.database_ops} ${in.database_init} | tee $out
 

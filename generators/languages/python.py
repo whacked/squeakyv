@@ -5,7 +5,7 @@ import jinja2
 from aiosql.types import QueryFn, SQLOperationType
 
 
-def render(statements_map: Dict[str, QueryFn]) -> str:
+def render(statements_map: Dict[str, QueryFn], schema_sql: Optional[str] = None) -> str:
     out: list[str] = []
     out.append('''\
 """
@@ -18,6 +18,12 @@ import sqlite3
 DEBUG_LEVEL = 0
 
 ''')
+
+    # Add embedded schema SQL if provided
+    if schema_sql:
+        # Escape the SQL for Python string literal
+        escaped_sql = schema_sql.replace('\\', '\\\\').replace('"""', r'\"\"\"')
+        out.append(f'# Embedded database schema\nSCHEMA_SQL = """\n{escaped_sql}\n"""\n\n')
 
     @dataclass
     class ReturnInfo:
