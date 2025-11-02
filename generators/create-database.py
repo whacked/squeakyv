@@ -214,13 +214,13 @@ def generate_kv_constraints(kv_info: KVTableInfo) -> str:
 
     return f"""
 -- Only one active row per key
-CREATE UNIQUE INDEX {active_index_name} ON {kv_info.table_name}({kv_info.key_field}) WHERE {kv_info.is_active_field} = 1;
+CREATE UNIQUE INDEX IF NOT EXISTS {active_index_name} ON {kv_info.table_name}({kv_info.key_field}) WHERE {kv_info.is_active_field} = 1;
 
 -- Time-travel and scans
-CREATE INDEX {time_index_name} ON {kv_info.table_name}({kv_info.key_field}, {kv_info.inserted_at_field});
+CREATE INDEX IF NOT EXISTS {time_index_name} ON {kv_info.table_name}({kv_info.key_field}, {kv_info.inserted_at_field});
 
 -- Swap-out on overwrite: retire old active row just before insert
-CREATE TRIGGER {trigger_name}
+CREATE TRIGGER IF NOT EXISTS {trigger_name}
 BEFORE INSERT ON {kv_info.table_name}
 FOR EACH ROW
 BEGIN

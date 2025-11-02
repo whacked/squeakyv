@@ -34,13 +34,13 @@ INSERT OR IGNORE INTO __metadata__ (key, value) VALUES ('schema_tree_ish', 'git-
 INSERT OR IGNORE INTO __metadata__ (key, value) VALUES ('creation_date', strftime('%Y-%m-%dT%H:%M:%f', 'now'));
 
 -- Only one active row per key
-CREATE UNIQUE INDEX kv_active_key ON kv(key) WHERE is_active = 1;
+CREATE UNIQUE INDEX IF NOT EXISTS kv_active_key ON kv(key) WHERE is_active = 1;
 
 -- Time-travel and scans
-CREATE INDEX kv_key_time ON kv(key, inserted_at);
+CREATE INDEX IF NOT EXISTS kv_key_time ON kv(key, inserted_at);
 
 -- Swap-out on overwrite: retire old active row just before insert
-CREATE TRIGGER kv_swap_active
+CREATE TRIGGER IF NOT EXISTS kv_swap_active
 BEFORE INSERT ON kv
 FOR EACH ROW
 BEGIN
@@ -48,13 +48,9 @@ BEGIN
   WHERE key = NEW.key AND is_active = 1;
 END;
 
--- Optional convenience view
+-- Convenience view
 CREATE VIEW IF NOT EXISTS kv_current AS
   SELECT key, value, inserted_at
   FROM kv
   WHERE is_active = 1;
-
--- Then:
--- Example convenience lookup
-SELECT value FROM kv_current WHERE key = ?;
 
