@@ -11,6 +11,7 @@ def render(statements_map: Dict[str, QueryFn]) -> str:
 import sqlite3
 
 DEBUG_LEVEL = 0
+
 """)
 
     @dataclass
@@ -45,16 +46,17 @@ def {{ name }}(conn: sqlite3.Connection, {{ ", ".join(parameters) }}) -> {{ retu
     statement = """\
 {{ sql }}
 """
-    parameters = { {% for p in parameters %}"{{ p }}": {{ p }}{% if not loop.last %}, {% endif %}{% endfor %} }
+    parameters = { {%- for p in parameters %}"{{ p }}": {{ p }}{% if not loop.last %}, {% endif %}{% endfor -%} }
     if DEBUG_LEVEL > 0:
         print("STATEMENT:", statement)
         print("PARAMETERS:", parameters)
     cursor = conn.execute(statement, parameters)
-    {% if return_call %}
+
+    {% if return_call -%}
     return {{ return_call }}
-    {% else %}
+    {% else -%}
     return None
-    {% endif %}
+    {%- endif -%}
 ''')
 
     for fname, qfn in statements_map.items():
@@ -67,7 +69,7 @@ def {{ name }}(conn: sqlite3.Connection, {{ ", ".join(parameters) }}) -> {{ retu
                 docstring=f"Execute {fname} query, returns {return_info.return_type}",
                 return_call=return_info.return_call,
                 return_type=return_info.return_type,
-            )
+            ).rstrip()
         )
         out.append("\n")
 

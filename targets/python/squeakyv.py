@@ -2,20 +2,20 @@ import sqlite3
 
 DEBUG_LEVEL = 0
 
+
 def delete_key(conn: sqlite3.Connection, key) -> None:
     """Execute delete_key query, returns None"""
     statement = """UPDATE kv
 SET is_active = 0
 WHERE key = :key AND is_active = 1;
 """
-    parameters = { "key": key }
+    parameters = {"key": key}
     if DEBUG_LEVEL > 0:
         print("STATEMENT:", statement)
         print("PARAMETERS:", parameters)
     cursor = conn.execute(statement, parameters)
-    
+
     return None
-    
 
 
 def get_current_value(conn: sqlite3.Connection, key) -> str | bytes:
@@ -24,14 +24,13 @@ def get_current_value(conn: sqlite3.Connection, key) -> str | bytes:
 FROM kv
 WHERE key = :key AND is_active = 1;
 """
-    parameters = { "key": key }
+    parameters = {"key": key}
     if DEBUG_LEVEL > 0:
         print("STATEMENT:", statement)
         print("PARAMETERS:", parameters)
     cursor = conn.execute(statement, parameters)
-    
+
     return cursor.fetchone()[0]
-    
 
 
 def list_active_keys(conn: sqlite3.Connection, ) -> list[str | bytes]:
@@ -41,14 +40,13 @@ FROM kv
 WHERE is_active = 1
 ORDER BY inserted_at DESC;
 """
-    parameters = {  }
+    parameters = {}
     if DEBUG_LEVEL > 0:
         print("STATEMENT:", statement)
         print("PARAMETERS:", parameters)
     cursor = conn.execute(statement, parameters)
-    
+
     return [row[0] for row in cursor.fetchall()]
-    
 
 
 def set_value(conn: sqlite3.Connection, key, value) -> None:
@@ -56,13 +54,10 @@ def set_value(conn: sqlite3.Connection, key, value) -> None:
     statement = """INSERT INTO kv (key, value)
 VALUES (:key, :value);
 """
-    parameters = { "key": key, "value": value }
+    parameters = {"key": key, "value": value}
     if DEBUG_LEVEL > 0:
         print("STATEMENT:", statement)
         print("PARAMETERS:", parameters)
     cursor = conn.execute(statement, parameters)
-    
+
     return None
-    
-
-

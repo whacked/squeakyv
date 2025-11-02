@@ -21,7 +21,7 @@ def render_sqlite_queries(
     # we need to import from language.<target-language>.py
     module_name = f"languages.{target_language}"
     module = importlib.import_module(module_name)
-    rendered_code = module.render(statements_map)
+    rendered_code = module.render(statements_map).strip()
     print(rendered_code)
 
     return
