@@ -16,6 +16,7 @@ in helpers.mkShell [
   ] ++ [
     sdflow
     pkgs.bash
+    pkgs.go
     pkgs.nodejs
     pkgs.rlwrap
     pkgs.python3

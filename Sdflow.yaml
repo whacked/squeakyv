@@ -33,3 +33,19 @@ generate-bash-target:
   out: ./targets/bash/squeakyv.sh
   run: python ${in.generator} bash ${in.database_ops} ${in.database_init} | tee $out
 
+generate-go-target:
+  in:
+    generator: generators/render-sqlite-queries.py
+    database_ops: sql/database-operations.autogen.yesql.sql
+    database_init: ./sql/create-database.autogen.sql
+  out: ./targets/go/operations.go
+  run: python ${in.generator} go ${in.database_ops} ${in.database_init} | tee $out
+
+generate-elisp-target:
+  in:
+    generator: generators/render-sqlite-queries.py
+    database_ops: sql/database-operations.autogen.yesql.sql
+    database_init: ./sql/create-database.autogen.sql
+  out: ./targets/elisp/squeakyv.el
+  run: python ${in.generator} elisp ${in.database_ops} ${in.database_init} | tee $out
+
