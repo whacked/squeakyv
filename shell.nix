@@ -13,6 +13,7 @@ in helpers.mkShell [
     pkgs.jq
     pkgs.jsonnet
     pkgs.python3Packages.ipython
+    pkgs.python3Packages.build
   ] ++ [
     sdflow
     pkgs.bash
@@ -23,6 +24,7 @@ in helpers.mkShell [
     pkgs.python3Packages.aiosql
     pkgs.python3Packages.jinja2
     pkgs.python3Packages.jsonref
+    pkgs.python3Packages.twine
   ];  # join lists with ++
 
   nativeBuildInputs = [
