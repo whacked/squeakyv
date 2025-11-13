@@ -15,8 +15,9 @@ in helpers.mkShell [
     pkgs.python3Packages.ipython
   ] ++ [
     sdflow
-    pkgs.rlwrap
+    pkgs.bash
     pkgs.nodejs
+    pkgs.rlwrap
     pkgs.python3
     pkgs.python3Packages.aiosql
     pkgs.python3Packages.jinja2

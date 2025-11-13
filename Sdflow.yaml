@@ -25,3 +25,11 @@ generate-python-target:
   out: ./targets/python/squeakyv/_operations.py
   run: python ${in.generator} python ${in.database_ops} ${in.database_init} | tee $out
 
+generate-bash-target:
+  in:
+    generator: generators/render-sqlite-queries.py
+    database_ops: sql/database-operations.autogen.yesql.sql
+    database_init: ./sql/create-database.autogen.sql
+  out: ./targets/bash/squeakyv.sh
+  run: python ${in.generator} bash ${in.database_ops} ${in.database_init} | tee $out
+
