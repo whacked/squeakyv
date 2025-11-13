@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "squeakyv"
-version = "0.1.0"
+version = "0.1.1"
 description = "Simple SQLite-backed key-value caching library"
 readme = "README.md"
 license = {text = "MIT"}
@@ -29,9 +29,9 @@ classifiers = [
 keywords = ["cache", "sqlite", "key-value", "storage", "memoization"]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/squeakyv"
-Repository = "https://github.com/yourusername/squeakyv"
-Issues = "https://github.com/yourusername/squeakyv/issues"
+Homepage = "https://github.com/whacked/squeakyv"
+Repository = "https://github.com/whacked/squeakyv"
+Issues = "https://github.com/whacked/squeakyv/issues"
 
 [tool.setuptools]
 packages = ["squeakyv"]
